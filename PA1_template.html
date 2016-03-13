@@ -91,7 +91,7 @@ daily_step_totals &lt;- group_by(activity_data, date) %&gt;%
 <pre class="r"><code>interval_step_averages &lt;- 
     group_by(activity_data, interval) %&gt;% 
     summarize(mean_steps = mean(steps, na.rm = TRUE))</code></pre>
-<p>The following graph shows the average number of steps taken in each interval across all days in the activity data set:</p>
+<p>Now we can graph this data set:</p>
 <pre class="r"><code>plot(interval_step_averages$interval, 
      interval_step_averages$mean_steps, 
      type=&quot;l&quot;,
@@ -105,7 +105,7 @@ daily_step_totals &lt;- group_by(activity_data, date) %&gt;%
 <h2>Imputing missing values</h2>
 <pre class="r"><code>num_missing &lt;- nrow(filter(activity_data, is.na(steps)))</code></pre>
 <p>The data-set is missing several values for certain intervals. A total of 2304 observations have no recorded steps activity.</p>
-<p>For each observation with a missing <code>steps</code> value, we replace it with the <em>mean</em> of observed steps for the same interval. like this:</p>
+<p>For each observation with a missing <code>steps</code> value, we replace it with the <em>mean</em> of observed steps for the same interval.</p>
 <pre class="r"><code>interval_means &lt;- activity_data %&gt;% 
     group_by(interval) %&gt;% 
     summarize(mean_steps = mean(steps, na.rm = TRUE))
@@ -124,15 +124,15 @@ filled_activity_data &lt;-
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
-<p>To determine the differences in activity based the day of the week, we first calculate a new factor variable in the <code>filled_activty_data</code> called <code>day_type</code> which is a factor with two possible values: “weekday” and “weekend”.</p>
+<p>To determine the differences in activity based the day of the week, we first calculate a new factor variable in the <code>filled_activty_data</code> data.frame called <code>day_type</code> which is a factor with two possible values: “weekday” and “weekend”.</p>
 <pre class="r"><code>weekdays &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
 filled_activity_data &lt;- 
     transform(filled_activity_data,
               day_type = as.factor(ifelse(weekdays(date) %in% weekdays,
                                           &quot;weekday&quot;,
-                                          &quot;weekend&quot;)))
-
-weekday_activity &lt;- 
+                                          &quot;weekend&quot;)))</code></pre>
+<p>Next, we’ll break the data apart by <code>day_type</code> and compute the mean for each <code>interval</code>:</p>
+<pre class="r"><code>weekday_activity &lt;- 
     filter(filled_activity_data, day_type == &quot;weekday&quot;) %&gt;%
     group_by(interval) %&gt;%
     summarize(mean_steps = mean(steps))
@@ -141,7 +141,7 @@ weekend_activity &lt;-
     filter(filled_activity_data, day_type == &quot;weekend&quot;) %&gt;%
     group_by(interval) %&gt;%
     summarize(mean_steps = mean(steps))</code></pre>
-<p>Now we’ll compare these two sets with a pair of simple line-plots:</p>
+<p>Now we can compare these two sets with a pair of simple line-plots:</p>
 <pre class="r"><code>par(mfrow = c(2, 1), mar = c(4, 4, 4, 2), oma = c(1, 1, 1, 1))
 with(weekday_activity, 
      plot(interval, mean_steps, type=&quot;l&quot;, cex=0.5,

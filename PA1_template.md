@@ -44,8 +44,7 @@ interval_step_averages <-
     summarize(mean_steps = mean(steps, na.rm = TRUE))
 ```
 
-The following graph shows the average number of steps taken in each interval
-across all days in the activity data set:
+Now we can graph this data set:
 
 ```r
 plot(interval_step_averages$interval, 
@@ -73,7 +72,6 @@ The data-set is missing several values for certain intervals. A total of
 
 For each observation with a missing `steps` value, we replace it with the
 _mean_ of observed steps for the same interval.
-like this:
 
 ```r
 interval_means <- activity_data %>% 
@@ -105,7 +103,7 @@ observed value for the `steps` variable.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 To determine the differences in activity based the day of the week, we first
-calculate a new factor variable in the `filled_activty_data` called
+calculate a new factor variable in the `filled_activty_data` data.frame called
 `day_type` which is a factor with two possible values: "weekday" and "weekend".
 
 
@@ -116,7 +114,12 @@ filled_activity_data <-
               day_type = as.factor(ifelse(weekdays(date) %in% weekdays,
                                           "weekday",
                                           "weekend")))
+```
 
+Next, we'll break the data apart by `day_type` and compute the mean for
+each `interval`:
+
+```r
 weekday_activity <- 
     filter(filled_activity_data, day_type == "weekday") %>%
     group_by(interval) %>%
@@ -128,7 +131,7 @@ weekend_activity <-
     summarize(mean_steps = mean(steps))
 ```
 
-Now we'll compare these two sets with a pair of simple line-plots:
+Now we can compare these two sets with a pair of simple line-plots:
 
 ```r
 par(mfrow = c(2, 1), mar = c(4, 4, 4, 2), oma = c(1, 1, 1, 1))
@@ -141,4 +144,4 @@ with(weekend_activity,
           main="Weekends", xlab="Interval",  ylab="Steps"))    
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
